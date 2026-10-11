@@ -2,19 +2,29 @@
 
 ## Trailing slash
 
-Always call the exact paths shown, trailing slash included. `/commands`
-answers with a `308` redirect to `/commands/`, and many HTTP clients drop the
-POST body when they follow it. You get an empty result with no error.
+Call the paths exactly as shown, trailing slash included. A path without it
+answers with a `308` redirect, and many HTTP clients drop the
+`Authorization` header when they follow one.
 
-## JSON
+## Requests
 
-Send `Content-Type: application/json`. Responses are always JSON.
+Every endpoint is `GET`. Path parameters are case insensitive where they are
+names (players, members). Query parameters are optional.
 
-A body that is missing or isn't valid JSON is treated as an empty object, so a
-broken request usually comes back as an empty result rather than a `400`.
+## Responses
 
-## Ids
+* Always JSON, UTF 8.
+* Dates are ISO 8601 strings in UTC, for example `"2026-10-11T12:00:00.000Z"`.
+* Durations are whole seconds (`playTimeSeconds`).
+* Money is whole cents (`priceCents`), in the site's credit currency.
+* Image fields are absolute URLs, or `null`.
+* Missing data is `null`, never an absent field.
+* Text fields named `description` or `body` contain sanitised HTML.
 
-Command ids are 24 character hex strings. Pass them back exactly as received.
+## Caching
+
+Responses carry `Cache-Control: private, max-age=30`. Game data (players,
+leaderboards, islands) is refreshed on our side about once a minute, so
+polling faster than that returns the same numbers.
 
 [Back to contents](../README.md)
